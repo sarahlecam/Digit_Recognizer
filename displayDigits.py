@@ -70,6 +70,7 @@ def binComparisonHist(data):
     
     plt.title('Histogram of imposter and genuine distances')
     plt.savefig('imposter_genuine.png')
+    plt.close()
     
 
 def findNearestNeighbor(data, digitSample):
@@ -108,5 +109,5 @@ digitSample = displayEachDigit(data)
 displayDigitCounts(data)
 nearestNeighbors = findNearestNeighbor(data, digitSample)
 plotSampleWithNearestNeighbor(nearestNeighbors)
-binComparisonHist()
+binComparisonHist(data)
 
