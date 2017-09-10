@@ -45,7 +45,18 @@ def displayDigitCounts():
 	plt.hist(labels, weights=weights, normed=1)
 	plt.title('Histogram of digit counts')
 	plt.savefig('digitCounts_historgram.png')
+    
+def L2Dist(r1, r2) :
+    with open(input_file, 'r') as file:
+        next(file, None)
+        reader = csv.reader(file)
+        reader = list(reader)
+        d1 = np.array(reader[r1][1:], dtype='uint8')
+        d2 = np.array(reader[r2][1:], dtype='uint8')
+        dist = np.linalg.norm(d1-d2)
+    return dist
 		
 displayEachDigit()
 plt.close()
 displayDigitCounts()
+
