@@ -9,6 +9,7 @@ Created on Sun Sep 10 12:09:31 2017
 from matplotlib import pyplot as plt
 import csv
 import numpy as np
+import scipy as sp
 
 input_file = "train.csv"
 
@@ -30,33 +31,51 @@ def displayEachDigit():
 				i = i+1
 				plt.imshow(pixels, cmap=plt.get_cmap('gray'))
 				labels.remove(label)
-	plt.savefig('mnist_digits_plot.png')			
+	plt.savefig('mnist_digits_plot.png')
+			
 		
 def displayDigitCounts():
-	labels = []
-	with open(input_file, 'r') as file:
-		next(file, None)
-		reader = csv.reader(file)
-		for row in reader:
-			label = float(row[0])
-			labels.append(label)
-	#plt.bar(list(labelCounts.keys()), labelCounts.values(), 1, color='g')
-	weights = np.ones_like(labels)/float(len(labels))
-	plt.hist(labels, weights=weights, normed=1)
-	plt.title('Histogram of digit counts')
-	plt.savefig('digitCounts_historgram.png')
-    
-def L2Dist(r1, r2) :
+    labels = []
     with open(input_file, 'r') as file:
         next(file, None)
         reader = csv.reader(file)
-        reader = list(reader)
-        d1 = np.array(reader[r1][1:], dtype='uint8')
-        d2 = np.array(reader[r2][1:], dtype='uint8')
-        dist = np.linalg.norm(d1-d2)
-    return dist
+        for row in reader:
+            label = float(row[0])
+            labels.append(label)
+	#plt.bar(list(labelCounts.keys()), labelCounts.values(), 1, color='g')
+	#weights = np.ones_like(labels)/float(len(labels))
+	#plt.hist(labels, weights=weights, normed=1)
+    plt.hist(labels, normed=1)
+    plt.title('Histogram of digit counts')
+    plt.savefig('digitCounts_historgram.png')
+    
+
+
+def binComparisonHist () :
+    
+    file = open(input_file, 'r')
+    file.readline()
+    data = np.loadtxt(file, delimiter = ",").astype(int)
+    
+    digits0 = data[data[:,0] == 0]
+    digits1 = data[data[:,0] == 1]
+             
+    genuine1 = sp.spatial.distance.pdist(digits1, 'euclidean');
+    genuine0 = sp.spatial.distance.pdist(digits0, 'euclidean');
+    genuine = np.concatenate((genuine1, genuine0))
+            
+    imposter = sp.spatial.distance.cdist(digits0, digits1, 'euclidean').flatten()
+    
+    plt.hist(genuine, bins=100, alpha= .5)
+    plt.hist(imposter, bins=100, alpha= .5)
+    
+    plt.title('Histogram of imposter and genuine distances')
+    plt.savefig('imposter_genuine.png')
+    
 		
 displayEachDigit()
 plt.close()
 displayDigitCounts()
+plt.close()
+binComparisonHist ()
 
