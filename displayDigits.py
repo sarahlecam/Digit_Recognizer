@@ -28,13 +28,13 @@ def displayEachDigit(data):
 	labels = list(range(10))
 	fig = plt.figure()			
 	rows = data.shape[0]
+	data = np.array(data, dtype='uint8')
 	for row in range(rows):
-		#convert label to integer
-		label = np.array(data[row][0], dtype='uint8')
+		label = data[row, 0]
 		if label in labels:
 			digitSample.append(row)
-			# convert to integer and reshape pixel dimensions
-			pixels = np.array(data[row][1:], dtype='uint8').reshape(28,28)
+			# Reshape pixel dimensions
+			pixels = data[row, 1:].reshape(28,28)
 			ax = fig.add_subplot(4,3,label+1)
 			plt.subplots_adjust(wspace=.2, hspace=.8)
 			plt.imshow(pixels, cmap=plt.get_cmap('gray'))
@@ -107,34 +107,30 @@ def ROCcurve(data, genuine, imposter) :
     
 
 def findNearestNeighbor(data, digitSample):
-	nearestNeighbors = {}
-	for sample in digitSample:
-		pixelsSample = np.array(data[sample][1:], dtype='uint8').reshape(28,28)
-		dist = 1000000
-		neighborRow = 0
-		for row in range(data.shape[0]):
-			if (row != sample):
-				pixels = np.array(data[row][1:], dtype='uint8').reshape(28,28)
-				newDist = np.linalg.norm(pixelsSample - pixels)
-				if newDist < dist:
-					dist = newDist
-					neighborRow = row
-		nearestNeighbors[sample] = neighborRow
-	return nearestNeighbors
+	data = np.array(data)
+	sampleToNeighbor = {}
+	dists = sp.spatial.distance.cdist(data[digitSample, :], data, 'euclidean')
+	dists[dists == 0] = np.nan
+	for i in range(len(digitSample)):
+		neighborIndex = np.nanargmin(dists[i, :])
+		sampleToNeighbor[digitSample[i]] = neighborIndex
+	return sampleToNeighbor
+
 				
-def plotSampleWithNearestNeighbor(nearestNeighbors):
-	fig = plt.figure()
-	for sampleIndex, neighborIndex in nearestNeighbors.items():
-		sampleLabel = np.array(data[sampleIndex][0], dtype='uint8')
-		samplePixels = np.array(data[sampleIndex][1:], dtype='uint8').reshape(28,28)
-		neighborPixels = np.array(data[neighborIndex][1:], dtype='uint8').reshape(28,28)
-		plt.subplots_adjust(wspace=.2, hspace=.8)
-		ax = fig.add_subplot(10,2, sampleLabel*2+1)
+def plotSampleWithNearestNeighbor(data, sampleToNeighbor):
+	data = np.array(data)
+	for sampleIndex, neighborIndex in sampleToNeighbor.items():
+		fig = plt.figure()
+		sampleLabel = data[sampleIndex, 0]
+		samplePixels = data[sampleIndex, 1:].reshape(28,28)
+		neighborPixels = data[neighborIndex, 1:].reshape(28,28)
+		plt.subplots_adjust(wspace=.2, hspace=.4)
+		ax = fig.add_subplot(1, 2, 1)
 		plt.imshow(samplePixels, cmap=plt.get_cmap('gray'))
-		ax = fig.add_subplot(10,2, sampleLabel*2+2)
+		ax = fig.add_subplot(1, 2, 2)
 		plt.imshow(neighborPixels, cmap=plt.get_cmap('gray'))
-	plt.savefig('nearestNeighbors_plot.png')
-	plt.close()
+		plt.savefig('nearestNeighbors_plot_' + str(sampleLabel) + '.png')
+		plt.close()
 
 
 def KNNClassifierNaive(trainData, classifier, k):
@@ -163,14 +159,11 @@ def perform3FoldCrossValidation(data, k):
 		for row in range(testData.shape[0]):
 			predicted.append(KNNClassifierNaive(trainData, testData[row][1:], 10))
 			actual.append(testData[row][0])
-	cm = confusion_matrix(actual, predicted)
-	accuracy = np.array(cm).trace()/np.array(cm).sum()
-	#print (cm)
-	#print (accuracy)
+	cm = np.array(confusion_matrix(actual, predicted))
+	accuracy = cm.trace()/cm.sum()
 	return cm
 
 def plotConfusionMatrix(cm):
-	cm = np.array(cm)
 	plt.figure()
 	plt.imshow(cm)
 	plt.title('Confusion matrix')
@@ -188,7 +181,7 @@ def plotConfusionMatrix(cm):
 def runKNNClassifierOnTestData(trainData, testData):
 	file = open(output_file, 'w')
 	# write header
-	file.write('ImageId, Label')
+	file.write('ImageId,Label')
 	for row in range(testData.shape[0]):
 		label = KNNClassifierNaive(trainData, testData[row][:], 10)
 		file.write('\n')
@@ -208,10 +201,10 @@ digitSample = displayEachDigit(data)
 displayDigitCounts(data)
 
 # find indices of nearest neighbor to list of digit samples
-nearestNeighbors = findNearestNeighbor(data, digitSample)
+sampleToNeighbor = findNearestNeighbor(data, digitSample)
 
 # plot digit sample with its nearest neighbor
-plotSampleWithNearestNeighbor(nearestNeighbors)
+plotSampleWithNearestNeighbor(data, sampleToNeighbor)
 
 # create histogram of pairwise comparison
 genuine, imposter = binComparisonHist(data)
