@@ -77,10 +77,33 @@ def binComparisonHist(data):
     plt.savefig('imposter_genuine.png')
     plt.close()
     
+    return genuine, imposter;
     
-def ROCcurve(data) :
     
+def ROCcurve(data, genuine, imposter) :
+    fpr = []
+    tpr = []
+    eer = 0
+    for i in range(int(min(genuine)), int(max(imposter))) :
+        true = len([x for x in genuine if x <= i]) / len(genuine)
+        false = len([x for x in imposter if x <= i]) / len(imposter)
+        tpr.append(true)
+        fpr.append(false)
+        if (round((1 - true),2) == round(false,2)) :
+            eer = false
+        
+    #print(eer)
     
+    plt.figure()
+    plt.plot(fpr, tpr)
+    plt.plot([0, 1], [0, 1], color='red', lw=1, linestyle='--')
+    plt.xlim([0.0, 1.1])
+    plt.ylim([0.0, 1.1])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC curve')
+    plt.savefig('ROC_curve.png')
+    plt.close()
     
 
 def findNearestNeighbor(data, digitSample):
@@ -142,8 +165,8 @@ def perform3FoldCrossValidation(data, k):
 			actual.append(testData[row][0])
 	cm = confusion_matrix(actual, predicted)
 	accuracy = np.array(cm).trace()/np.array(cm).sum()
-	print (cm)
-	print (accuracy)
+	#print (cm)
+	#print (accuracy)
 	return cm
 
 def plotConfusionMatrix(cm):
@@ -191,7 +214,10 @@ nearestNeighbors = findNearestNeighbor(data, digitSample)
 plotSampleWithNearestNeighbor(nearestNeighbors)
 
 # create histogram of pairwise comparison
-binComparisonHist(data)
+genuine, imposter = binComparisonHist(data)
+
+# create roc curve
+ROCcurve(data, genuine, imposter)
 
 # create confusion matrix for 3Fold cross validation on training data
 confusion_matrix = perform3FoldCrossValidation(data, 10)
