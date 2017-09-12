@@ -56,22 +56,31 @@ def displayDigitCounts(data):
 
 
 def binComparisonHist(data):
-     
+    
+    # Creating 2 arrays for digits 1 and 0
     digits0 = data[data[:,0] == 0]
     digits1 = data[data[:,0] == 1]
-             
+       
+    # Running pairwise distance on both arrays and concatenating results     
     genuine1 = sp.spatial.distance.pdist(digits1, 'euclidean');
     genuine0 = sp.spatial.distance.pdist(digits0, 'euclidean');
     genuine = np.concatenate((genuine1, genuine0))
-            
+    
+    # Pairwise distance between 2 sets for imposters
     imposter = sp.spatial.distance.cdist(digits0, digits1, 'euclidean').flatten()
     
+    # plotting both histograms
     plt.hist(genuine, bins=100, alpha= .5)
     plt.hist(imposter, bins=100, alpha= .5)
     
     plt.title('Histogram of imposter and genuine distances')
     plt.savefig('imposter_genuine.png')
     plt.close()
+    
+    
+def ROCcurve(data) :
+    
+    
     
 
 def findNearestNeighbor(data, digitSample):
