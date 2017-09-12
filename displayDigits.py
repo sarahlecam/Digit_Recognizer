@@ -84,13 +84,13 @@ def ROCcurve(data, genuine, imposter) :
     fpr = []
     tpr = []
     eer = 0
-    for i in range(int(min(genuine)), int(max(imposter))) :
-        true = len([x for x in genuine if x <= i]) / len(genuine)
-        false = len([x for x in imposter if x <= i]) / len(imposter)
+    for i in np.arange(int(min(genuine)), int(max(imposter)), 100):
+        true = len(genuine[genuine <= i]) / len(genuine)
+        false = len(imposter[imposter <= i]) / len(imposter)
         tpr.append(true)
         fpr.append(false)
-        if (round((1 - true),2) == round(false,2)) :
-            eer = false
+        #if (round((1 - true),1) == round(false,1)) :
+            #eer = false
         
     #print(eer)
     
