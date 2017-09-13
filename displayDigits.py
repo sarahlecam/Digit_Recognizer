@@ -26,7 +26,7 @@ def loadData(input_file):
 def displayEachDigit(data):
 	digitSample = []
 	labels = list(range(10))
-	fig = plt.figure()			
+	fig = plt.figure(num=None, figsize=(8, 10), dpi=85, facecolor='w', edgecolor='k')	
 	rows = data.shape[0]
 	data = np.array(data, dtype='uint8')
 	for row in range(rows):
@@ -36,7 +36,10 @@ def displayEachDigit(data):
 			# Reshape pixel dimensions
 			pixels = data[row, 1:].reshape(28,28)
 			ax = fig.add_subplot(4,3,label+1)
-			plt.subplots_adjust(wspace=.2, hspace=.8)
+			plt.subplots_adjust(hspace=.4)
+			ticks = list(range(0,28,25))
+			plt.xticks(ticks)
+			plt.yticks(ticks)
 			plt.imshow(pixels, cmap=plt.get_cmap('gray'))
 			labels.remove(label)
 	plt.savefig('mnist_digits_plot.png')
@@ -51,6 +54,8 @@ def displayDigitCounts(data):
 		labels.append(label)
 	plt.hist(labels, normed=1)
 	plt.title('Histogram of digit counts')
+	plt.xlabel('Digit')
+	plt.ylabel('Prior Probability')
 	plt.savefig('digitCounts_historgram.png')
 	plt.close()
 
@@ -125,10 +130,15 @@ def plotSampleWithNearestNeighbor(data, sampleToNeighbor):
 		samplePixels = data[sampleIndex, 1:].reshape(28,28)
 		neighborPixels = data[neighborIndex, 1:].reshape(28,28)
 		plt.subplots_adjust(wspace=.2, hspace=.4)
+		ticks = list(range(0,28,25))
 		ax = fig.add_subplot(1, 2, 1)
 		plt.imshow(samplePixels, cmap=plt.get_cmap('gray'))
+		plt.xticks(ticks)
+		plt.yticks(ticks)
 		ax = fig.add_subplot(1, 2, 2)
 		plt.imshow(neighborPixels, cmap=plt.get_cmap('gray'))
+		plt.xticks(ticks)
+		plt.yticks(ticks)
 		plt.savefig('nearestNeighbors_plot_' + str(sampleLabel) + '.png')
 		plt.close()
 
@@ -198,25 +208,25 @@ test_data = loadData(test_data)
 digitSample = displayEachDigit(data)
 
 # create histogram of digit counts
-displayDigitCounts(data)
+#displayDigitCounts(data)
 
 # find indices of nearest neighbor to list of digit samples
 sampleToNeighbor = findNearestNeighbor(data, digitSample)
 
-# plot digit sample with its nearest neighbor
+# # plot digit sample with its nearest neighbor
 plotSampleWithNearestNeighbor(data, sampleToNeighbor)
 
-# create histogram of pairwise comparison
-genuine, imposter = binComparisonHist(data)
+# # create histogram of pairwise comparison
+# genuine, imposter = binComparisonHist(data)
 
-# create roc curve
-ROCcurve(data, genuine, imposter)
+# # create roc curve
+# ROCcurve(data, genuine, imposter)
 
-# create confusion matrix for 3Fold cross validation on training data
-confusion_matrix = perform3FoldCrossValidation(data, 10)
+# # create confusion matrix for 3Fold cross validation on training data
+# confusion_matrix = perform3FoldCrossValidation(data, 10)
 
-# plot confusion matrix
-plotConfusionMatrix(confusion_matrix)
+# # plot confusion matrix
+# plotConfusionMatrix(confusion_matrix)
 
-# run KNN classifier on test data using training data and write result to file
-runKNNClassifierOnTestData(data, test_data)
+# # run KNN classifier on test data using training data and write result to file
+# runKNNClassifierOnTestData(data, test_data)
