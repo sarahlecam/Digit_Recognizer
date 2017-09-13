@@ -208,7 +208,7 @@ test_data = loadData(test_data)
 digitSample = displayEachDigit(data)
 
 # create histogram of digit counts
-#displayDigitCounts(data)
+displayDigitCounts(data)
 
 # find indices of nearest neighbor to list of digit samples
 sampleToNeighbor = findNearestNeighbor(data, digitSample)
@@ -216,17 +216,17 @@ sampleToNeighbor = findNearestNeighbor(data, digitSample)
 # # plot digit sample with its nearest neighbor
 plotSampleWithNearestNeighbor(data, sampleToNeighbor)
 
-# # create histogram of pairwise comparison
-# genuine, imposter = binComparisonHist(data)
+# create histogram of pairwise comparison
+genuine, imposter = binComparisonHist(data)
 
-# # create roc curve
-# ROCcurve(data, genuine, imposter)
+# create roc curve
+ROCcurve(data, genuine, imposter)
 
-# # create confusion matrix for 3Fold cross validation on training data
-# confusion_matrix = perform3FoldCrossValidation(data, 10)
+# create confusion matrix for 3Fold cross validation on training data
+confusion_matrix = perform3FoldCrossValidation(data, 10)
 
-# # plot confusion matrix
-# plotConfusionMatrix(confusion_matrix)
+# plot confusion matrix
+plotConfusionMatrix(confusion_matrix)
 
-# # run KNN classifier on test data using training data and write result to file
-# runKNNClassifierOnTestData(data, test_data)
+# run KNN classifier on test data using training data and write result to file
+runKNNClassifierOnTestData(data, test_data)
