@@ -37,12 +37,15 @@ def trainModel(trainData, survived, testData, ID) :
     model = LogisticRegression()
     model.fit(trainData, survived)
     predictsurv = model.predict(testData)
+    return predictsurv
     
+def generateSubmission(predictsurv) :
     submit = pd.DataFrame(columns=["PassengerId","Survived"])
     submit["PassengerId"] = ID
     submit["Survived"] = predictsurv
     submit.to_csv("TitanicSurvival.csv", index = False)
 
 trainData, survived, testData, ID = loadData()
-trainModel(trainData, survived, testData, ID)
+predictsurv = trainModel(trainData, survived, testData, ID)
+generateSubmission(predictsurv)
 
