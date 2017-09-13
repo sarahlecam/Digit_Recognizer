@@ -24,40 +24,57 @@ def loadData(input_file):
 	return data
 
 def displayEachDigit(data):
-	digitSample = []
-	labels = list(range(10))
-	fig = plt.figure(num=None, figsize=(8, 10), dpi=85, facecolor='w', edgecolor='k')	
-	rows = data.shape[0]
-	data = np.array(data, dtype='uint8')
-	for row in range(rows):
-		label = data[row, 0]
-		if label in labels:
-			digitSample.append(row)
-			# Reshape pixel dimensions
-			pixels = data[row, 1:].reshape(28,28)
-			ax = fig.add_subplot(4,3,label+1)
-			plt.subplots_adjust(hspace=.4)
-			ticks = list(range(0,28,25))
-			plt.xticks(ticks)
-			plt.yticks(ticks)
-			plt.imshow(pixels, cmap=plt.get_cmap('gray'))
-			labels.remove(label)
-	plt.savefig('mnist_digits_plot.png')
-	plt.close()
-	return digitSample			
+    digitSample = []
+    labels = list(range(10))
+    fig = plt.figure(num=None, figsize=(8, 10), dpi=85, facecolor='w')	
+    plt.axis("off")
+    plt.title('MNIST Digits', fontsize=20, y=1.05)
+    rows = data.shape[0]
+    data = np.array(data, dtype='uint8')
+    for row in range(rows):
+        label = data[row, 0]
+        if label in labels:
+            digitSample.append(row)
+            # Reshape pixel dimensions
+            pixels = data[row, 1:].reshape(28,28)
+            ax = fig.add_subplot(4,3,label+1)
+            plt.subplots_adjust(hspace=.4)
+            ticks = list(range(0,28,25))
+            plt.xticks(ticks)
+            plt.yticks(ticks)
+            plt.imshow(pixels, cmap=plt.get_cmap('gray'))
+            labels.remove(label)
+    plt.savefig('mnist_digits_plot.png')
+    plt.close()
+    return digitSample			
 		
 
 def displayDigitCounts(data):
-	labels = []
-	for row in range(data.shape[0]):
-		label = float(data[row][0])
-		labels.append(label)
-	plt.hist(labels, normed=1)
-	plt.title('Histogram of digit counts')
-	plt.xlabel('Digit')
-	plt.ylabel('Prior Probability')
-	plt.savefig('digitCounts_historgram.png')
-	plt.close()
+    labels = []
+    for row in range(data.shape[0]):
+        label = float(data[row][0])
+        labels.append(label)
+    
+    # getting prior probabilities
+#    probs = dict()
+#    for i in range(0,10): 
+#        probs[i] = labels.count(i)/len(labels)   
+    
+    # printing for report
+    #print(probs)
+    
+    plt.figure(num=None, figsize=(6, 6), dpi=85, facecolor='w')
+    plt.hist(labels, normed=1, bins=np.arange(50)-0.5, edgecolor='black', 
+             linewidth=.8, color ='#9ec3ff', alpha = .8)
+    plt.title('Normalized Digit Frequencies',fontsize=16, y=1.04)
+    plt.xlim([-0.5, 9.5])
+    ticks = list(range(0,10))
+    plt.xticks(ticks)
+    plt.ylim([0.0, .13])
+    plt.xlabel('Digits')
+    plt.ylabel('Prior Probability')
+    plt.savefig('digitCounts_historgram.png')
+    plt.close()
 
 
 def binComparisonHist(data):
