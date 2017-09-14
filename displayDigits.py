@@ -92,10 +92,15 @@ def binComparisonHist(data):
     imposter = sp.spatial.distance.cdist(digits0, digits1, 'euclidean').flatten()
     
     # plotting both histograms
-    plt.hist(genuine, bins=100, alpha= .5)
-    plt.hist(imposter, bins=100, alpha= .5)
-    
-    plt.title('Histogram of imposter and genuine distances')
+    plt.figure(num=None, figsize=(10, 10), dpi=85, facecolor='w')
+    plt.hist(genuine, bins=60, alpha= .8, edgecolor='#a7abb2', 
+             linewidth=.8, color = "#849df9", label = "Genuine Matches")
+    plt.hist(imposter, bins=60, alpha= .6, edgecolor='#a7abb2', 
+             linewidth=.8, color = "#ff947a", label = "Imposter Matches")
+    plt.legend(fontsize=12)
+    plt.title('Imposter vs. Genuine Distances',fontsize=16, y=1.04)
+    plt.xlabel('L2 Distance', fontsize=12)
+    plt.ylabel('Frequency', fontsize=12)
     plt.savefig('imposter_genuine.png')
     plt.close()
     
@@ -113,17 +118,16 @@ def ROCcurve(data, genuine, imposter) :
         fpr.append(false)
         #if (round((1 - true),1) == round(false,1)) :
             #eer = false
-        
     #print(eer)
-    
-    plt.figure()
-    plt.plot(fpr, tpr)
-    plt.plot([0, 1], [0, 1], color='red', lw=1, linestyle='--')
+    plt.figure(num=None, figsize=(10, 10), dpi=85, facecolor='w')
+    plt.plot(fpr, tpr, color='#849df9', label = "L2 Distance Classifier", linewidth=2)
+    plt.plot([0, 1], [0, 1], color='#ff947a', lw=1, linestyle='--', label = "Random Classifier")
     plt.xlim([0.0, 1.1])
     plt.ylim([0.0, 1.1])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC curve')
+    plt.legend(fontsize=12)
+    plt.xlabel('False Positive Rate', fontsize=12)
+    plt.ylabel('True Positive Rate', fontsize=12)
+    plt.title('ROC curve',fontsize=16, y=1.04)
     plt.savefig('ROC_curve.png')
     plt.close()
     
